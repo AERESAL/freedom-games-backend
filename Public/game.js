@@ -1,6 +1,19 @@
 // ✅ Define socket at the very top
 const socket = io();
 
+// Socket connection events
+socket.on('connect', () => {
+    console.log('Connected to server');
+});
+
+socket.on('disconnect', () => {
+    console.log('Disconnected from server');
+});
+
+socket.on('connect_error', (error) => {
+    console.error('Connection error:', error);
+});
+
 let roomCode;
 let playerX = 100, playerY = 300;
 let opponentX = 700, opponentY = 300;
@@ -11,8 +24,16 @@ let enemyBullets = []; // Opponent bullets
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Debug: Check if canvas is found
+console.log('Canvas found:', canvas);
+console.log('Canvas dimensions:', canvas.width, 'x', canvas.height);
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw a background to make sure canvas is visible
+    ctx.fillStyle = '#333';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     // Draw players
     ctx.fillStyle = 'blue';
@@ -105,3 +126,19 @@ socket.on('opponentLeft', () => {
     alert('Opponent left the game.');
     roomCode = null;
 });
+
+// Room management functions
+function createRoom() {
+    socket.emit('createRoom');
+}
+
+function joinRoom() {
+    const roomCode = document.getElementById('roomInput').value;
+    if (roomCode) {
+        socket.emit('joinRoom', roomCode);
+    }
+}
+
+// Make functions available globally for HTML buttons
+window.createRoom = createRoom;
+window.joinRoom = joinRoom;

@@ -1,11 +1,26 @@
 // server.js
 const express = require('express');
 const http = require('http');
+const cors = require('cors');
 const { Server } = require('socket.io');
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
-app.use(express.static('public'));
+
+// Configure CORS
+app.use(cors({
+    origin: 'http://127.0.0.1:5500',
+    credentials: true
+}));
+
+const io = new Server(server, {
+    cors: {
+        origin: 'http://127.0.0.1:5500',
+        methods: ['GET', 'POST'],
+        credentials: true
+    }
+});
+
+app.use(express.static('Public'));
 
 const rooms = {}; // { roomCode: [player1, player2] }
 
@@ -34,6 +49,10 @@ io.on('connection', (socket) => {
         socket.to(data.room).emit('opponentMove', data);
     });
 
+    socket.on('shoot', (data) => {
+        socket.to(data.room).emit('opponentShoot', data);
+    });
+
     socket.on('disconnecting', () => {
         for (const room of socket.rooms) {
             if (rooms[room]) {
@@ -46,8 +65,4 @@ io.on('connection', (socket) => {
 
 server.listen(3000, () => {
     console.log('Server running on http://localhost:3000');
-});
-
-socket.on('shoot', (data) => {
-    socket.to(data.room).emit('opponentShoot', { bullet: data.bullet });
 });
