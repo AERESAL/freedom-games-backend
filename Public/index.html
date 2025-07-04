@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>1v1 Shooter</title>
+  <style>
+    canvas { background: #222; display: block; margin: 0 auto; }
+  </style>
+</head>
+<body>
+  <h1>1v1 Shooter</h1>
+  <button onclick="createRoom()">Create Room</button>
+  <input id="roomInput" placeholder="Enter Room Code">
+  <button onclick="joinRoom()">Join Room</button>
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
